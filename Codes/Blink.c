@@ -5,7 +5,7 @@
 
 void GPIO_Initialize()
 {
-	RCC->AHBENR |= RCC_AHBENR_GPIOBEN;   //Enable Clock for PortE
+	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for PortE
 	
 	GPIOE->MODER |= GPIO_MODER_MODER13_0;   //Enable PE13 as OUTPUT
 	GPIOE->MODER &= ~(GPIO_MODER_MODER13_0);
