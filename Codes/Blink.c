@@ -5,8 +5,13 @@
 
 void GPIO_Initialize()
 {
-	RCC->AHBENR |= 1 << 21;   //Enable Clock for PortE
-	GPIOE->MODER |= 1 << 13;   //Enable PE13 as OUTPUT
+	RCC->AHBENR |= RCC_AHBENR_GPIOBEN;   //Enable Clock for PortE
+	
+	GPIOE->MODER |= GPIO_MODER_MODER13_0;   //Enable PE13 as OUTPUT
+	GPIOE->MODER &= ~(GPIO_MODER_MODER13_0);
+	
+	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_13);   //Output Push-Pull
+	GPIOE->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR13);   //High Speed
 }
 
 void delay(int k)
