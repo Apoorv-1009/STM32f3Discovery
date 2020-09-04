@@ -27,9 +27,9 @@ int main()
 	
 	while(1)
 	{
-		GPIOE->BSRR |= 1<<13;   //Turn on PE13
+		GPIOE->BSRR |= 1 << 13;   //Turn on PE13
 		delay(1000000);
-		GPIOE->BSRR |= 1<<(13+16);   //Turn off PE13
+		GPIOE->BSRR |= 1 <<(13+16);   //Turn off PE13
 		delay(1000000);
 	}
 }
