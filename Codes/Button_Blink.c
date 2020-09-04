@@ -7,14 +7,21 @@
 
 void GPIO_Initialize()
 {
-	RCC->AHBENR |= 1 << 21;   //Enable Clock for PortE
-	GPIOE->MODER |= 1 << 13;   //Enable PE13 as OUTPUT
+	//PE13 Setup:
+	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for PortE
 	
-	RCC->AHBENR |= 1 << 17;   //Enable Clock for PortA
-	GPIOE->MODER &= (0 << 0 | 0 << 1);   //Enable PA0 as INPUT
-	//Enable Pull-Down
-	GPIOE->PUPDR |= 1 << 1;
-	GPIOE->PUPDR &= 0 << 0;
+	GPIOE->MODER &= ~(GPIO_MODER_MODER13_1);   //Enable PE13 as OUTPUT
+	GPIOE->MODER |= GPIO_MODER_MODER13_0;   
+	
+	GPIOE->OTYPER |= ~(GPIO_OTYPER_OT_13);   //Output Push-Pull
+	GPIOE->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR13;   //High Speed 
+	
+	//PA0 Setup:
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for PortA
+	GPIOE->MODER &= ~(GPIO_MODER_MODER0);   //Enable PA0 as INPUT
+	
+	GPIOE->PUPDR |= GPIO_PUPDR_PUPDR0_1;   //Enable Pull-Down
+	GPIOE->PUPDR &= ~(GPIO_PUPDR_PUPDR0_0);
 	
 }
 
@@ -27,12 +34,13 @@ int main()
 		pressed = GPIOA->IDR & GPIO_IDR_0;
 		
 		if(pressed)
-			GPIOE->BSRR |= 1<<13;
+			GPIOE->BSRR |= 1 << 13;
 		
 		else
-			GPIOE->BSRR |= 1<<(13+16);
+			GPIOE->BSRR |= 1 << (13+16);
 		
 	}
 	
 }
+
 
