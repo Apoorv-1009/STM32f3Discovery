@@ -1,4 +1,4 @@
-//Code generates a delay using Systick Timer to blink LD10(PE13)
+//Code generates a delay in ms using Systick Timer to blink LD10(PE13)
 
 #include "stm32f303xc.h"
 #include "stm32f3xx.h"
@@ -22,8 +22,13 @@ void delay_ms(int del)
 
 void GPIO_Initialize()
 {
-	RCC->AHBENR |= 1 << 21;   //Enable Clock for PortE
-	GPIOE->MODER |= 1 << 13;   //Enable PE13 as OUTPUT
+	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for PortE
+	
+	GPIOE->MODER |= GPIO_MODER_MODER13_0;   //Enable PE13 as OUTPUT
+	GPIOE->MODER |= ~(GPIO_MODER_MODER13_1);
+	
+	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_13);   //Output Push-Pull
+	GPIOE->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR13);   //High Speed
 }
 
 
@@ -32,7 +37,7 @@ int main()
 	SysTick_Initialize();
 	GPIO_Initialize();
 	
-	int delay = 1000;   //Enter Delay here
+	int delay = 1000;   //Enter Delay in ms here
 	while(1)
 	{
 		GPIOE->BSRR |= 1 << 13;
