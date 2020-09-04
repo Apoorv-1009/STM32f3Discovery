@@ -28,7 +28,7 @@ void GPIO_Initialize()
 	//Enable AF Mode for PC6:
 	GPIOC->MODER &= ~(GPIO_MODER_MODER6_0);
 	GPIOC->MODER |= GPIO_MODER_MODER6_1;
-	GPIOC->AFR[0] |= GPIO_AFRL_AFRL2;   //AF2
+	GPIOC->AFR[0] |= 1 << 25;   //AF2
 	
 }
 
