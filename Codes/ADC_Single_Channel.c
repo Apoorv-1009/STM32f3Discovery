@@ -51,7 +51,7 @@ void ADC_Initialize()
 	delay_ms(10);
 	
 	ADC1_2_COMMON->CCR |= 1 << 16;   //Set ADC Clock to Synchronous Mode
-	ADC1->CR |= ~(ADC_CR_ADCALDIF);   //Launch Calibration in Single-Ended Input Mode
+	ADC1->CR &= ~(ADC_CR_ADCALDIF);   //Launch Calibration in Single-Ended Input Mode
 	ADC1->CR |= ADC_CR_ADCAL;   //Start Calibration
 	while( (ADC1->CR) & ADC_CR_ADCAL);   //Wait till Calibration is Complete
 	delay_ms(10);
