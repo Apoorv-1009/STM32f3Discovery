@@ -20,7 +20,7 @@ void SysTick_Handler()
 void delay_ms(int del)
 {
 	myTicks = 0;
-	while(myTicks < 0);
+	while(myTicks < del);
 }
 
 void Timer_Initialize()
@@ -90,6 +90,7 @@ int main()
 	SysTick_Initialize();
 	Timer_Initialize();
 	ADC_Initialize();
+	GPIO_Initialize();
 	while(1)
 	{
 		TIM3->CCR1 = ADC1->DR;
