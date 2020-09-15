@@ -62,6 +62,7 @@ void Timer_Initialize()
 	TIM3->CCMR1 |= (TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2);   //PWM Mode 1 for Channel 1
 	TIM3->CCMR1 |= (TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2);   //PWM Mode 1 for Channel 2  
 	
+	TIM3->PSC = 1;   //freq/1 = 72 Mhz
 	TIM3->ARR = 65535;   //16 Bit Value
 	TIM3->CCR1 = 0;
 	TIM3->CCR2 = 0;
