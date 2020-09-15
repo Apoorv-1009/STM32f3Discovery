@@ -28,14 +28,14 @@ void delay_ms(int del)
 void GPIO_Initialize()
 {
 	//PC6 Setup:
-	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;   //Enable Port C
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;   //Enable Clock for Port C
 	//Enable AF Mode for PC6:
 	GPIOC->MODER &= ~(GPIO_MODER_MODER6_0);
 	GPIOC->MODER |= (GPIO_MODER_MODER6_1);
 	GPIOC->AFR[0] |= 1<<25;   //AF2
 	
 	//PA7 Setup:
-	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Port A
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
 	//Enable AF Mode for PA7:
 	GPIOA->MODER &= ~(GPIO_MODER_MODER7_0);
 	GPIOA->MODER |= (GPIO_MODER_MODER7_1);
@@ -90,17 +90,19 @@ void ADC_Initialize()
 	delay_ms(10);
 	
 	ADC1->CR |= ADC_CR_ADEN;   //Enable ADC
-	while(!( (ADC1->ISR) & ADC_ISR_ADRDY) );   //Wait till ADC is Ready
+	//while(!( (ADC1->ISR) & ADC_ISR_ADRDY) );   //Wait till ADC is Ready
 	
-	ADC1->SQR1 |= ADC_SQR1_L_1;   //Set Length of 2 ADC Sequences  !!!!!
+	ADC1->SQR1 |= 1 << 0;   //Set Length of 2 ADC Sequences  !!!!!
 	//Set channel you want to convert in the sequence registers:
 	ADC1->SQR1 |= ADC_SQR1_SQ1_0;   //Channel 1, Sequence 1  !!!!!
 	ADC1->SQR1 |= ADC_SQR1_SQ2_1;	  //Channel 2, Sequence 2  !!!!!
+	
+	ADC1->CFGR |= ADC_CFGR_DMAEN;   //DMA Enable
+	ADC1->CFGR |= ADC_CFGR_DMACFG;   //Circular Mode seleced
 		 
 	//DMA Settings:  !!!!!
 	DMA1_Channel1->CPAR = (uint32_t)(&(ADC1->DR));   //Give location to read from  !!!!!
 	DMA1_Channel1->CMAR = (uint32_t)samples;   //Give location to store  !!!!!
-	
 	DMA1_Channel1->CNDTR |= 2;   //Define Number of times to transfer data !!!!!
 	
 	DMA1_Channel1->CCR |= DMA_CCR_CIRC;   //Enable Circular Mode
