@@ -6,7 +6,7 @@
 #include "stm32f303xc.h"
 
 volatile int myTicks = 0;
-uint16_t samples[2] = {0,0};
+volatile uint16_t samples[2] = {0,0};
 
 void SysTick_Initialize()
 {
@@ -43,11 +43,11 @@ void GPIO_Initialize()
 	
 	//Setup PA1:
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
-	GPIOA->MODER |= GPIO_MODER_MODER1;   //Enable Analog Mode
+	GPIOA->MODER |= GPIO_MODER_MODER1_1 | GPIO_MODER_MODER1_0;   //Enable Analog Mode
 	
 	//Setup PA0:
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
-	GPIOA->MODER |= GPIO_MODER_MODER0;   //Enable Analog Mode
+	GPIOA->MODER |= GPIO_MODER_MODER0_1 | GPIO_MODER_MODER0_0;   //Enable Analog Mode
 }
 
 void Timer_Initialize()
@@ -63,7 +63,7 @@ void Timer_Initialize()
 	TIM3->CCMR1 |= (TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2);   //PWM Mode 1 for Channel 2  
 	
 	TIM3->PSC = 1;   //freq/1 = 72 Mhz
-	TIM3->ARR = 65535;   //16 Bit Value
+	TIM3->ARR = 4095;   //12 Bit Value
 	TIM3->CCR1 = 0;
 	TIM3->CCR2 = 0;
 	
@@ -133,6 +133,8 @@ int main()
 	{
 		TIM3->CCR1 = samples[0];
 		TIM3->CCR2 = samples[1];
+		//TIM3->CCR1 = 4095;
+		//TIM3->CCR2 = 4095;
 	}
 	
 }
