@@ -1,12 +1,12 @@
-//Code implements Motor Code on LEDs thru PWM with Timer1, by reading Joystick values
-//Setup:
-//All LEDs are Onboard
-//PWM LEDs: LD3(PE9->Ch1), LD7(PE11->Ch2)
-//Direction LEDs: LD6(PE15), LD10(PE13)
-//Joystick: PA1(Ch 1), PA0(Ch 2)
-//x->PA1   y->PA0
 /*
-		  Left     Right
+Code implements Motor Code on LEDs thru PWM with Timer1, by reading Joystick values
+Setup:
+All LEDs are Onboard
+PWM LEDs: LD3(PE9->Ch1), LD7(PE11->Ch2)
+Direction LEDs: LD6(PE15), LD10(PE13)
+Joystick: PA1(Ch 1), PA0(Ch 2)
+x->PA1   y->PA0
+      Left     Right
 LED:  PE15     PE13
 PWM:  PE9      PE11
 */
