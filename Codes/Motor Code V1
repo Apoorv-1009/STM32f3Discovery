@@ -1,0 +1,242 @@
+//Code implements Motor Code on LEDs thru PWM with Timer3, by reading Joystick values
+//Setup:
+//PWM LEDs: PC6(Ch 1), PA7(Ch 2)
+//Direction LEDs: LD4(PE8), LD5(PE10)
+//Joystick: PA1(Ch 1), PA0(Ch 2)
+//x->PC6   y->PA7
+/*
+Left LED: PE10       Right LED: PE8
+Left PWM: PC6        Right PWM: PA7
+*/
+
+#include "stm32f303xc.h"
+
+volatile int myTicks = 0;
+volatile uint16_t samples[2] = {0,0};
+//int UL = 4095;
+//x -> samlpes[0]
+//y -> samples[1]
+
+	
+void SysTick_Initialize()
+{
+	SystemCoreClockUpdate();
+	SysTick_Config(SystemCoreClock/1000);
+}
+void SysTick_Handler()
+{
+	myTicks++;
+}
+void delay_ms(int del)
+{
+	myTicks = 0;
+	while(myTicks < del);
+}
+
+
+void GPIO_Initialize()
+{
+	//PC6 Setup:
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;   //Enable Clock for Port C
+	//Enable AF Mode for PC6:
+	GPIOC->MODER &= ~(GPIO_MODER_MODER6_0);
+	GPIOC->MODER |= (GPIO_MODER_MODER6_1);
+	GPIOC->AFR[0] |= 1<<25;   //AF2
+	
+	//PA7 Setup:
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
+	//Enable AF Mode for PA7:
+	GPIOA->MODER &= ~(GPIO_MODER_MODER7_0);
+	GPIOA->MODER |= (GPIO_MODER_MODER7_1);
+	GPIOA->AFR[0] |= 1<<29;   //AF2
+	
+	//Setup PA1:
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
+	GPIOA->MODER |= GPIO_MODER_MODER1_1 | GPIO_MODER_MODER1_0;   //Enable Analog Mode
+	
+	//Setup PA0:
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
+	GPIOA->MODER |= GPIO_MODER_MODER0_1 | GPIO_MODER_MODER0_0;   //Enable Analog Mode
+	
+	//Setup PE8:
+	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for Port E
+	GPIOE->MODER |= GPIO_MODER_MODER8_0;   //Enable as OUTPUT
+	GPIOE->MODER &= ~(GPIO_MODER_MODER13_1);
+	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_8);   //Output Push-Pull
+	GPIOE->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR8);   //High Speed
+	
+	//Setup PE10:
+	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for Port E
+	GPIOE->MODER |= GPIO_MODER_MODER10_0;   //Enable as OUTPUT
+	GPIOE->MODER &= ~(GPIO_MODER_MODER10_1);
+	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_10);   //Output Push-Pull
+	GPIOE->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR10);   //High Speed
+	
+}
+
+
+void Timer_Initialize()
+{
+	RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;   //Enable Timer3
+	TIM3->CCER |= TIM_CCER_CC1E | TIM_CCER_CC2E;   //Enable Channel 1 & 2 as OUTPUT
+	TIM3->CR1 |= TIM_CR1_ARPE;   //Enable Auto Re-Load Preload (ARPE)
+	
+	TIM3->CCMR1 |= TIM_CCMR1_OC1PE;   //Enable PreLoad for Channel 1
+	TIM3->CCMR1 |= TIM_CCMR1_OC2PE;   //Enable PreLoad for Channel 2  ~~~~~
+	
+	TIM3->CCMR1 |= (TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2);   //PWM Mode 1 for Channel 1
+	TIM3->CCMR1 |= (TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2);   //PWM Mode 1 for Channel 2  
+	
+	TIM3->PSC = 1;   //freq/1 = 72 Mhz
+	TIM3->ARR = 4095;   //12 Bit Value
+	TIM3->CCR1 = 0;
+	TIM3->CCR2 = 0;
+	
+	TIM3->EGR |= TIM_EGR_UG;   //Update Registers
+	TIM3->CR1 |= TIM_CR1_CEN;   //Start Counting
+}
+
+
+void ADC_Initialize()
+{
+	RCC->CFGR |= RCC_CFGR2_ADCPRE12_DIV1;   //f/1 = 72Mhz
+	RCC->AHBENR |= RCC_AHBENR_ADC12EN;   //Enable ADC Clock
+	RCC->AHBENR |= RCC_AHBENR_DMA1EN;   //Enable DMA1  !!!!!
+	
+	//Enable Voltage Regulator
+	ADC1->CR &= ~(ADC_CR_ADVREGEN_1);
+	ADC1->CR |= ADC_CR_ADVREGEN_0;
+	delay_ms(10);
+	
+	ADC1_2_COMMON->CCR |= 1 << 16;   //Set ADC Clock to Synchronous Mode
+	ADC1->CR &= ~(ADC_CR_ADCALDIF);   //Launch Calibration in Single-Ended Input Mode
+	ADC1->CR |= ADC_CR_ADCAL;   //Start Calibration
+	while( (ADC1->CR) & ADC_CR_ADCAL);   //Wait till Calibration is Complete
+	delay_ms(10);
+	
+	ADC1->CR |= ADC_CR_ADEN;   //Enable ADC
+	//while(!( (ADC1->ISR) & ADC_ISR_ADRDY) );   //Wait till ADC is Ready
+	
+	ADC1->SQR1 |= 1 << 0;   //Set Length of 2 ADC Sequences  !!!!!
+	//Set channel you want to convert in the sequence registers:
+	ADC1->SQR1 |= ADC_SQR1_SQ1_0;   //Channel 1, Sequence 1  !!!!!
+	ADC1->SQR1 |= ADC_SQR1_SQ2_1;	  //Channel 2, Sequence 2  !!!!!
+	
+	ADC1->CFGR |= ADC_CFGR_DMAEN;   //DMA Enable
+	ADC1->CFGR |= ADC_CFGR_DMACFG;   //Circular Mode seleced
+		 
+	//DMA Settings:  !!!!!
+	DMA1_Channel1->CPAR = (uint32_t)(&(ADC1->DR));   //Give location to read from  !!!!!
+	DMA1_Channel1->CMAR = (uint32_t)samples;   //Give location to store  !!!!!
+	DMA1_Channel1->CNDTR |= 2;   //Define Number of times to transfer data !!!!!
+	
+	DMA1_Channel1->CCR |= DMA_CCR_CIRC;   //Enable Circular Mode
+	DMA1_Channel1->CCR |= DMA_CCR_MINC;   //Memory Increment Mode
+	DMA1_Channel1->CCR |= DMA_CCR_PSIZE_0;   //Define Peripheral Data size as 16 bits
+	DMA1_Channel1->CCR |= DMA_CCR_MSIZE_0;   //Define Memory size as 16 bits
+	
+	DMA1_Channel1->CCR |= DMA_CCR_EN;   //Enable DMA1
+	//!NOTE! Do NOT Enable DMA before you define all of its settings
+	
+	//Set Sampling Rate:
+	ADC1->SMPR1 |= ( ADC_SMPR1_SMP1);   //601.5 Sampling Rate for Channel 1
+	ADC1->SMPR1 |= ( ADC_SMPR1_SMP2);   //601.5 Sampling Rate for Channel 2   !!!!!
+																																							 
+	ADC1->CFGR |= ADC_CFGR_CONT;   //Enable Continuous Conversion Mode
+	ADC1->CR |= ADC_CR_ADSTART;   //ADC  Start of Regular Conversion
+	delay_ms(10);
+}
+
+
+void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X, int Y)
+{
+	if(DL == 1)
+		GPIOE->BSRR |= 1 << 10;   //Turn on LEFT LED
+	else
+		GPIOE->BSRR |= 1 << (10+16);   //Turn off LEFT LED
+  if(DR == 1)
+		GPIOE->BSRR |= 1 << 8;   //Turn on RIGHT LED
+	else
+		GPIOE->BSRR |= 1 << (8+16);   //Turn off RIGHT LED
+	
+  TIM3->CCR1 = abs(4095*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
+  TIM3->CCR2 = abs(4095*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
+}
+
+int mapp(float k, float l, float h, float L, float H)
+{
+	return ((k - l)/(h - l))*(H - L) + L;
+}
+
+int buffer(int k)
+{
+	int val = 0;
+	val = samples[k];
+	val = mapp(val, 0, 4095, -4095, 4095);
+	
+	if(abs(val) <20)
+		val = 0;
+	
+	if(val < -4000)
+		val = -4095;
+	
+	if(val > 4000)
+		val = 4095;
+	
+	return val;
+}
+
+
+int main()
+{
+	SysTick_Initialize();
+	GPIO_Initialize();
+	Timer_Initialize();
+	ADC_Initialize();
+	
+	int x,y;
+	while(1)
+	{
+		x = buffer(0);   //Read x co-ordinate of Joystick
+		y = buffer(1);   //Read y co-ordinate of Joystick
+		
+		/*
+		if(abs(x) < 10 & abs(y) < 10)   //No Motion
+			Drive(0,0,0,0,0,0,0,0,0,0);
+		
+		else if(x > 0 & y > 0 & x >= y)   //Octet 1
+		  Drive(1,0,0,1,0,1,0,1,x,y);
+		
+		else if(x > 0 & y > 0 & x < y)   //Octet 2
+			Drive(1,1,0,0,1,1,1,0,x,y);
+		
+		else if(x < 0 & y > 0 & y > x)   //Octet 3
+			Drive(1,1,1,1,0,0,0,1,x,y);
+		
+		else if(x < 0 & y > 0 & abs(x) >= y)   //Octet 4
+			Drive(0,1,1,0,1,0,1,0,x,y);
+		
+		 else if(x < 0 & y < 0 & abs(x) > abs(y))   //Octet 5
+			Drive(0,1,0,1,0,1,0,1,x,y);
+		
+		else if(x < 0 & y < 0 & abs(y) >= abs(x))   //Octet 6
+			Drive(0,0,0,0,1,1,1,0,x,y);
+		
+		else if(x > 0 & y < 0 & abs(y) >= abs(x))   //Octet 7
+			Drive(0,0,1,1,0,0,0,1,x,y);
+			
+		else if(x > 0 & y < 0 & abs(x) > abs(y))   //Octet 8
+			Drive(1,0,1,0,1,0,1,0,x,y);
+		*/
+		
+		
+		
+		//Test Drive:
+		Drive(1,1,0,1,0,0,0,1,x,y);
+		
+		//TIM3->CCR1 = samples[0];
+		//TIM3->CCR2 = samples[1];
+		
+	}
+	
+}
