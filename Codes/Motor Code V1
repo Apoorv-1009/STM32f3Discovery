@@ -155,14 +155,14 @@ void ADC_Initialize()
 void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X, int Y)
 {
 	if(DL == 1)
-		GPIOE->BSRR |= 1 << 15;   //Turn on LEFT LED
+		GPIOE->ODR |= 1 << 15;   //Turn on LEFT LED
 	else
-		GPIOE->BSRR |= (unsigned int)1 << (15+16);   //Turn off LEFT LED
+		GPIOE->ODR &= 0 << 15;   //Turn off LEFT LED
 	
   if(DR == 1)
-		GPIOE->BSRR |= 1 << 13;   //Turn on RIGHT LED
+		GPIOE->ODR |= 1 << 13;   //Turn on RIGHT LED
 	else
-		GPIOE->BSRR |= 1 << (13+16);   //Turn off RIGHT LED
+		GPIOE->ODR &= 0 << 13;   //Turn off RIGHT LED
 	
   TIM1->CCR1 = abs(65535*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
   TIM1->CCR2 = abs(65535*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
@@ -221,7 +221,7 @@ int main()
 			Drive(0,1,0,1,0,0,1,0,x,y);
 
 		else if(x > 0 & y > 0 & x >= y)   //Octet 1
-		  	Drive(1,0,0,1,0,1,0,1,x,y);
+		  Drive(1,0,0,1,0,1,0,1,x,y);
 		
 		else if(x > 0 & y > 0 & x < y)   //Octet 2
 			Drive(1,1,0,0,1,1,1,0,x,y);
