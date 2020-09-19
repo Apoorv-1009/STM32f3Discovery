@@ -6,7 +6,8 @@ PWM LEDs: LD3(PE9->Ch1), LD7(PE11->Ch2)
 Direction LEDs: LD6(PE15), LD10(PE13)
 Joystick: PA1(Ch 1), PA0(Ch 2)
 x->PA1   y->PA0
-      Left     Right
+
+		  Left     Right
 LED:  PE15     PE13
 PWM:  PE9      PE11
 */
@@ -15,7 +16,6 @@ PWM:  PE9      PE11
 
 volatile int myTicks = 0;
 volatile uint16_t samples[2] = {0,0};
-//int UL = 4095;
 //x -> samlpes[0]
 //y -> samples[1]
 
@@ -157,15 +157,15 @@ void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X
 	if(DL == 1)
 		GPIOE->BSRR |= 1 << 15;   //Turn on LEFT LED
 	else
-		GPIOE->BSRR |= 1 << (15+16);   //Turn off LEFT LED
+		GPIOE->BSRR |= (unsigned int)1 << (15+16);   //Turn off LEFT LED
 	
   if(DR == 1)
 		GPIOE->BSRR |= 1 << 13;   //Turn on RIGHT LED
 	else
 		GPIOE->BSRR |= 1 << (13+16);   //Turn off RIGHT LED
 	
-  TIM1->CCR1 = abs(4095*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
-  TIM1->CCR2 = abs(4095*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
+  TIM1->CCR1 = abs(65535*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
+  TIM1->CCR2 = abs(65535*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
 }
 
 int mapp(float k, float l, float h, float L, float H)
@@ -173,7 +173,7 @@ int mapp(float k, float l, float h, float L, float H)
 	return ((k - l)/(h - l))*(H - L) + L;
 }
 
-int buffer(int k)
+int read(int k)
 {
 	int val = 0;
 	val = samples[k];
@@ -202,15 +202,26 @@ int main()
 	int x,y;
 	while(1)
 	{
-		x = buffer(0);   //Read x co-ordinate of Joystick
-		y = buffer(1);   //Read y co-ordinate of Joystick
+		x = read(0);   //Read mapped x co-ordinate of Joystick
+		y = read(1);   //Read mapped y co-ordinate of Joystick
 		
-		/*
-		if(abs(x) < 10 & abs(y) < 10)   //No Motion
+		if(abs(x) < 20 & abs(y) < 20)   //No Motion
 			Drive(0,0,0,0,0,0,0,0,0,0);
 		
+		else if(abs(x) < 20 & y >= 20)   //Full Forward
+			Drive(1,1,0,0,1,0,0,1,x,y);
+		
+		else if(abs(x) < 20 & y <= -20)   //Full Backward
+			Drive(0,0,0,0,1,0,0,1,x,y);
+		
+		else if(x > 20 & abs(y) <= 20)   //Spot Turn Left
+			Drive(1,0,0,1,0,0,1,0,x,y);
+		
+		else if(x < -20 & abs(y) <= 20)   //Spot Turn Right
+			Drive(0,1,0,1,0,0,1,0,x,y);
+
 		else if(x > 0 & y > 0 & x >= y)   //Octet 1
-		  Drive(1,0,0,1,0,1,0,1,x,y);
+		  	Drive(1,0,0,1,0,1,0,1,x,y);
 		
 		else if(x > 0 & y > 0 & x < y)   //Octet 2
 			Drive(1,1,0,0,1,1,1,0,x,y);
@@ -221,7 +232,7 @@ int main()
 		else if(x < 0 & y > 0 & abs(x) >= y)   //Octet 4
 			Drive(0,1,1,0,1,0,1,0,x,y);
 		
-		 else if(x < 0 & y < 0 & abs(x) > abs(y))   //Octet 5
+		else if(x < 0 & y < 0 & abs(x) > abs(y))   //Octet 5
 			Drive(0,1,0,1,0,1,0,1,x,y);
 		
 		else if(x < 0 & y < 0 & abs(y) >= abs(x))   //Octet 6
@@ -232,10 +243,10 @@ int main()
 			
 		else if(x > 0 & y < 0 & abs(x) > abs(y))   //Octet 8
 			Drive(1,0,1,0,1,0,1,0,x,y);
-		*/
+		
 		
 		//Test Drive:
-		Drive(1,1,0,1,0,0,0,1,x,y);
+		//Drive(1,1,0,1,0,0,0,1,x,y);
 		
 	}
 	
