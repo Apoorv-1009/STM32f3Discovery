@@ -6,9 +6,10 @@ PWM LEDs: LD3(PE9->Ch1), LD7(PE11->Ch2)
 Direction LEDs: LD6(PE15), LD10(PE13)
 Joystick: PA1(Ch 1), PA0(Ch 2)
 x->PA1   y->PA0
-      Left     Right
-LED:  PE15     PE13
-PWM:  PE9      PE11
+
+      Left     	     Right
+LED:  LD10(PE13)     LD6(PE15)
+PWM:  LD7(PE11)      LD3(PE9)
 */
 
 #include "stm32f303xc.h"
@@ -154,17 +155,17 @@ void ADC_Initialize()
 void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X, int Y)
 {
 	if(DL == 1)
-		GPIOE->ODR |= 1 << 15;   //Turn on LEFT LED
+		GPIOE->ODR |= 1 << 13;   //Turn on LEFT LED
 	else
-		GPIOE->ODR &= 0 << 15;   //Turn off LEFT LED
+		GPIOE->ODR &= 0 << 13;   //Turn off LEFT LED
 	
-  if(DR == 1)
-		GPIOE->ODR |= 1 << 13;   //Turn on RIGHT LED
+  	if(DR == 1)
+		GPIOE->ODR |= 1 << 15;   //Turn on RIGHT LED
 	else
-		GPIOE->ODR &= 0 << 13;   //Turn off RIGHT LED
+		GPIOE->ODR &= 0 << 15;   //Turn off RIGHT LED
 	
-  TIM1->CCR1 = abs(65535*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
-  TIM1->CCR2 = abs(65535*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
+  TIM1->CCR2 = abs(65535*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
+  TIM1->CCR1 = abs(65535*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
 }
 
 int mapp(float k, float l, float h, float L, float H)
