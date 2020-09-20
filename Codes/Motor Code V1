@@ -89,7 +89,7 @@ void Timer_Initialize()
 	TIM1->CCMR1 |= (TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2);   //PWM Mode 1 for Channel 2  
 	
 	TIM1->PSC = 1;   //freq/1 = 72 Mhz
-	TIM1->ARR = 65535;   //16 Bit Value
+	TIM1->ARR = 4095;   //16 Bit Value
 	TIM1->CCR1 = 0;
 	TIM1->CCR2 = 0;
 	
@@ -159,13 +159,13 @@ void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X
 	else
 		GPIOE->ODR &= 0 << 13;   //Turn off LEFT LED
 	
-  	if(DR == 1)
+  if(DR == 1)
 		GPIOE->ODR |= 1 << 15;   //Turn on RIGHT LED
 	else
 		GPIOE->ODR &= 0 << 15;   //Turn off RIGHT LED
 	
-  TIM1->CCR2 = abs(65535*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
-  TIM1->CCR1 = abs(65535*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
+  TIM1->CCR2 = 0; //abs(65535*oct0 - abs(X*a) - abs(Y*b))*0;   //Left PWM
+  TIM1->CCR1 = 0; //abs(65535*oct1 - abs(X*p) - abs(Y*q))*0;   //Right PWM
 }
 
 int mapp(float k, float l, float h, float L, float H)
@@ -177,16 +177,16 @@ int read(int k)
 {
 	int val = 0;
 	val = samples[k];
-	val = mapp(val, 0, 4095, -65535, 65535);
+	val = mapp(val, 0, 4095, -4095, 4095);
 	
-	if(abs(val) <500)
+	if(abs(val) < 100)
 		val = 0;
 	
-	if(val < -65500)
-		val = -65535;
+	if(val < -3900)
+		val = -3900;
 	
-	if(val > 65500)
-		val = 65535;
+	if(val > 3900)
+		val = 3900;
 	
 	return val;
 }
@@ -221,7 +221,7 @@ int main()
 			Drive(0,1,0,1,0,0,1,0,x,y);
 
 		else if(x > 0 & y > 0 & x >= y)   //Octet 1
-		  Drive(1,0,0,1,0,1,0,1,x,y);
+		  	Drive(1,0,0,1,0,1,0,1,x,y);
 		
 		else if(x > 0 & y > 0 & x < y)   //Octet 2
 			Drive(1,1,0,0,1,1,1,0,x,y);
