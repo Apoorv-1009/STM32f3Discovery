@@ -205,7 +205,7 @@ int main()
 		x = read(0);   //Read mapped x co-ordinate of Joystick
 		y = read(1);   //Read mapped y co-ordinate of Joystick
 		
-		/*
+		
 		if(abs(x) < 20 & abs(y) < 20)   //No Motion
 			Drive(0,0,0,0,0,0,0,0,0,0);
 		
@@ -220,7 +220,8 @@ int main()
 		
 		else if(x < -20 & abs(y) <= 20)   //Spot Turn Right
 			Drive(0,1,0,1,0,0,1,0,x,y);
-
+		
+		/*
 		else if(x > 0 & y > 0 & x >= y)   //Octet 1
 		  Drive(1,0,0,1,0,1,0,1,x,y);
 		
@@ -247,7 +248,7 @@ int main()
 		*/
 		
 		//Test Drive:
-		Drive(1,1,0,1,0,0,0,1,x,y);
+		//Drive(1,1,0,1,0,0,0,1,x,y);
 		
 	}
 	
