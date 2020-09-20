@@ -155,17 +155,17 @@ void ADC_Initialize()
 void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X, int Y)
 {
 	if(DL == 1)
-		GPIOE->ODR |= 1 << 13;   //Turn on LEFT LED
+		GPIOE->BSRR |= 1 << 13;   //Turn on LEFT LED
 	else
-		GPIOE->ODR &= 0 << 13;   //Turn off LEFT LED
+		GPIOE->BSRR &= 0 << 13;   //Turn off LEFT LED
 	
   if(DR == 1)
-		GPIOE->ODR |= 1 << 15;   //Turn on RIGHT LED
+		GPIOE->BSRR |= 1 << 15;   //Turn on RIGHT LED
 	else
-		GPIOE->ODR &= 0 << 15;   //Turn off RIGHT LED
+		GPIOE->BSRR &= 0 << 15;   //Turn off RIGHT LED
 	
-  TIM1->CCR2 = 0; //abs(65535*oct0 - abs(X*a) - abs(Y*b))*0;   //Left PWM
-  TIM1->CCR1 = 0; //abs(65535*oct1 - abs(X*p) - abs(Y*q))*0;   //Right PWM
+  TIM1->CCR2 = abs(65535*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
+  TIM1->CCR1 = abs(65535*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
 }
 
 int mapp(float k, float l, float h, float L, float H)
@@ -205,6 +205,7 @@ int main()
 		x = read(0);   //Read mapped x co-ordinate of Joystick
 		y = read(1);   //Read mapped y co-ordinate of Joystick
 		
+		/*
 		if(abs(x) < 20 & abs(y) < 20)   //No Motion
 			Drive(0,0,0,0,0,0,0,0,0,0);
 		
@@ -221,7 +222,7 @@ int main()
 			Drive(0,1,0,1,0,0,1,0,x,y);
 
 		else if(x > 0 & y > 0 & x >= y)   //Octet 1
-		  	Drive(1,0,0,1,0,1,0,1,x,y);
+		  Drive(1,0,0,1,0,1,0,1,x,y);
 		
 		else if(x > 0 & y > 0 & x < y)   //Octet 2
 			Drive(1,1,0,0,1,1,1,0,x,y);
@@ -243,10 +244,10 @@ int main()
 			
 		else if(x > 0 & y < 0 & abs(x) > abs(y))   //Octet 8
 			Drive(1,0,1,0,1,0,1,0,x,y);
-		
+		*/
 		
 		//Test Drive:
-		//Drive(1,1,0,1,0,0,0,1,x,y);
+		Drive(1,1,0,1,0,0,0,1,x,y);
 		
 	}
 	
