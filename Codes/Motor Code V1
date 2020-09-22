@@ -157,12 +157,12 @@ void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X
 	if(DL == 1)
 		GPIOE->BSRR |= 1 << 13;   //Turn on LEFT LED
 	else
-		GPIOE->BSRR &= 0 << 13;   //Turn off LEFT LED
+		GPIOE->BRR |= 1 << 13;   //Turn off LEFT LED
 	
   if(DR == 1)
 		GPIOE->BSRR |= 1 << 15;   //Turn on RIGHT LED
 	else
-		GPIOE->BSRR &= 0 << 15;   //Turn off RIGHT LED
+		GPIOE->BRR |= 1 << 15;   //Turn off RIGHT LED
 	
   TIM1->CCR2 = abs(65535*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
   TIM1->CCR1 = abs(65535*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
@@ -179,7 +179,7 @@ int read(int k)
 	val = samples[k];
 	val = mapp(val, 0, 4095, -4095, 4095);
 	
-	if(abs(val) < 100)
+	if(abs(val) < 400)
 		val = 0;
 	
 	if(val < -3900)
@@ -221,31 +221,70 @@ int main()
 		else if(x < -20 & abs(y) <= 20)   //Spot Turn Right
 			Drive(0,1,0,1,0,0,1,0,x,y);
 		
-		/*
+
 		else if(x > 0 & y > 0 & x >= y)   //Octet 1
-		  Drive(1,0,0,1,0,1,0,1,x,y);
-		
+		{
+			if(abs(x) > 4095 - abs(y))
+				Drive(1,0,0,1,0,1,0,1,x,y);
+			else 
+				Drive(1,0,1,0,1,0,1,0,x,y);
+		}
+				
 		else if(x > 0 & y > 0 & x < y)   //Octet 2
-			Drive(1,1,0,0,1,1,1,0,x,y);
+		{
+			if(abs(y) > 4095 - abs(x))
+				Drive(1,1,0,0,1,1,1,0,x,y);
+			else
+				Drive(1,1,1,1,0,0,0,1,x,y);
+		}
 		
 		else if(x < 0 & y > 0 & y > x)   //Octet 3
-			Drive(1,1,1,1,0,0,0,1,x,y);
-		
+		{
+			if(abs(y) > 4095 - abs(x))
+				Drive(1,1,1,1,0,0,0,1,x,y);
+			else
+				Drive(1,1,1,1,0,0,0,1,x,y);
+		}
 		else if(x < 0 & y > 0 & abs(x) >= y)   //Octet 4
-			Drive(0,1,1,0,1,0,1,0,x,y);
+		{
+			if(abs(x) > 4095 - abs(y))
+				Drive(0,1,1,0,1,0,1,0,x,y);
+			else
+				Drive(0,1,0,1,0,1,0,1,x,y);
+		}
 		
 		else if(x < 0 & y < 0 & abs(x) > abs(y))   //Octet 5
-			Drive(0,1,0,1,0,1,0,1,x,y);
+		{
+			if(abs(x) > 4095 - abs(y))
+				Drive(0,1,0,1,0,1,0,1,x,y);
+			else
+				Drive(0,1,1,0,1,0,1,0,x,y);
+		}
 		
 		else if(x < 0 & y < 0 & abs(y) >= abs(x))   //Octet 6
-			Drive(0,0,0,0,1,1,1,0,x,y);
+		{
+			if(abs(y) > 4095 - abs(x)) 
+				Drive(0,0,0,0,1,1,1,0,x,y);
+			else
+				Drive(0,0,1,1,0,0,0,1,x,y);
+		}
 		
 		else if(x > 0 & y < 0 & abs(y) >= abs(x))   //Octet 7
-			Drive(0,0,1,1,0,0,0,1,x,y);
-			
+		{
+			if(abs(y) > 4095 - abs(x))
+				Drive(0,0,1,1,0,0,0,1,x,y);
+			else
+				Drive(0,0,0,0,1,1,1,0,x,y);
+		}
+		
 		else if(x > 0 & y < 0 & abs(x) > abs(y))   //Octet 8
-			Drive(1,0,1,0,1,0,1,0,x,y);
-		*/
+		{
+			if(abs(x) > 4095 - abs(y))
+				Drive(1,0,1,0,1,0,1,0,x,y);
+			else
+				Drive(1,0,0,1,0,1,0,1,x,y);
+		}
+		
 		
 		//Test Drive:
 		//Drive(1,1,0,1,0,0,0,1,x,y);
