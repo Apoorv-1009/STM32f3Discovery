@@ -224,65 +224,65 @@ int main()
 
 		else if(x > 0 & y > 0 & x >= y)   //Octet 1
 		{
-			if(abs(x) > 4095 - abs(y))
+			//if(abs(x) > 4095 - abs(y))
 				Drive(1,0,0,1,0,1,0,1,x,y);
-			else 
-				Drive(1,0,1,0,1,0,1,0,x,y);
+			//else 
+				//Drive(1,0,1,0,1,0,1,0,x,y);
 		}
 				
 		else if(x > 0 & y > 0 & x < y)   //Octet 2
 		{
-			if(abs(y) > 4095 - abs(x))
+			//if(abs(y) > 4095 - abs(x))
 				Drive(1,1,0,0,1,1,1,0,x,y);
-			else
-				Drive(1,1,1,1,0,0,0,1,x,y);
+			//else
+				//Drive(1,1,1,1,0,0,0,1,x,y);
 		}
 		
 		else if(x < 0 & y > 0 & y > x)   //Octet 3
 		{
-			if(abs(y) > 4095 - abs(x))
+			//if(abs(y) > 4095 - abs(x))
 				Drive(1,1,1,1,0,0,0,1,x,y);
-			else
-				Drive(1,1,1,1,0,0,0,1,x,y);
+			//else
+				//Drive(1,1,1,1,0,0,0,1,x,y);
 		}
 		else if(x < 0 & y > 0 & abs(x) >= y)   //Octet 4
 		{
-			if(abs(x) > 4095 - abs(y))
+			//if(abs(x) > 4095 - abs(y))
 				Drive(0,1,1,0,1,0,1,0,x,y);
-			else
-				Drive(0,1,0,1,0,1,0,1,x,y);
+			//else
+				//Drive(0,1,0,1,0,1,0,1,x,y);
 		}
 		
 		else if(x < 0 & y < 0 & abs(x) > abs(y))   //Octet 5
 		{
-			if(abs(x) > 4095 - abs(y))
+			//if(abs(x) > 4095 - abs(y))
 				Drive(0,1,0,1,0,1,0,1,x,y);
-			else
-				Drive(0,1,1,0,1,0,1,0,x,y);
+			//else
+				//Drive(0,1,1,0,1,0,1,0,x,y);
 		}
 		
 		else if(x < 0 & y < 0 & abs(y) >= abs(x))   //Octet 6
 		{
-			if(abs(y) > 4095 - abs(x)) 
+			//if(abs(y) > 4095 - abs(x)) 
 				Drive(0,0,0,0,1,1,1,0,x,y);
-			else
-				Drive(0,0,1,1,0,0,0,1,x,y);
+			//else
+				//Drive(0,0,1,1,0,0,0,1,x,y);
 		}
 		
 		else if(x > 0 & y < 0 & abs(y) >= abs(x))   //Octet 7
 		{
-			if(abs(y) > 4095 - abs(x))
+			//if(abs(y) > 4095 - abs(x))
 				Drive(0,0,1,1,0,0,0,1,x,y);
-			else
-				Drive(0,0,0,0,1,1,1,0,x,y);
+			//else
+				//Drive(0,0,0,0,1,1,1,0,x,y);
 		}
 		
 		else if(x > 0 & y < 0 & abs(x) > abs(y))   //Octet 8
 		{
-			if(abs(x) > 4095 - abs(y))
+			//if(abs(x) > 4095 - abs(y))
 				Drive(1,0,1,0,1,0,1,0,x,y);
-			else
-				Drive(1,0,0,1,0,1,0,1,x,y);
+			//else
+				//Drive(1,0,0,1,0,1,0,1,x,y);
 		}
 		
 		
@@ -292,3 +292,4 @@ int main()
 	}
 	
 }
+
