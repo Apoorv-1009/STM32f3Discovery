@@ -151,8 +151,15 @@ void ADC_Initialize()
 	delay_ms(10);
 }
 
+int abss(int c)
+{
+	if(c < 0)
+		c = -1*c;
+	
+	return c;
+}
 
-void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X, int Y)
+void Drive(int DL, int DR, int oct0, int oct1, int a, int b, int p, int q, int X, int Y)
 {
 	if(DL == 1)
 		GPIOE->BSRR |= 1 << 13;   //Turn on LEFT LED
@@ -164,9 +171,10 @@ void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X
 	else
 		GPIOE->BRR |= 1 << 15;   //Turn off RIGHT LED
 	
-  TIM1->CCR2 = abs(65535*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
-  TIM1->CCR1 = abs(65535*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
+  TIM1->CCR2 = (uint32_t) abss(65535*oct0 - abss(X*a) - abss(Y*b));   //Left PWM
+  TIM1->CCR1 = (uint32_t) abss(65535*oct1 - abss(X*p) - abss(Y*q));   //Right PWM
 }
+
 
 int mapp(float k, float l, float h, float L, float H)
 {
@@ -238,6 +246,7 @@ int main()
 				//Drive(1,1,1,1,0,0,0,1,x,y);
 		}
 		
+		/*
 		else if(x < 0 & y > 0 & y > x)   //Octet 3
 		{
 			//if(abs(y) > 4095 - abs(x))
@@ -284,7 +293,8 @@ int main()
 			//else
 				//Drive(1,0,0,1,0,1,0,1,x,y);
 		}
-		
+		/*
+		*/
 		
 		//Test Drive:
 		//Drive(1,1,0,1,0,0,0,1,x,y);
