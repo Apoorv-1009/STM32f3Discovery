@@ -159,7 +159,7 @@ int abss(int c)
 	return c;
 }
 
-void Drive(int DL, int DR, int oct0, int oct1, int a, int b, int p, int q, int X, int Y)
+void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X, int Y)
 {
 	if(DL == 1)
 		GPIOE->BSRR |= 1 << 13;   //Turn on LEFT LED
