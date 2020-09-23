@@ -171,8 +171,8 @@ void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X
 	else
 		GPIOE->BRR |= 1 << 15;   //Turn off RIGHT LED
 	
-  TIM1->CCR2 = (uint32_t) abss(65535*oct0 - abss(X*a) - abss(Y*b));   //Left PWM
-  TIM1->CCR1 = (uint32_t) abss(65535*oct1 - abss(X*p) - abss(Y*q));   //Right PWM
+  TIM1->CCR2 = (uint32_t) abss(4095*oct0 - abss(X*a) - abss(Y*b));   //Left PWM
+  TIM1->CCR1 = (uint32_t) abss(4095*oct1 - abss(X*p) - abss(Y*q));   //Right PWM
 }
 
 
