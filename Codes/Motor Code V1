@@ -159,6 +159,7 @@ int abss(int c)
 	return c;
 }
 
+//        |Left    Right| |      Left PWM       |  |      Right PWM     | |  Values  |   
 void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X, int Y)
 {
 	if(DL == 1)
@@ -191,10 +192,10 @@ int read(int k)
 		val = 0;
 	
 	if(val < -3900)
-		val = -3900;
+		val = -4095;
 	
 	if(val > 3900)
-		val = 3900;
+		val = 4095;
 	
 	return val;
 }
@@ -302,4 +303,5 @@ int main()
 	}
 	
 }
+
 
