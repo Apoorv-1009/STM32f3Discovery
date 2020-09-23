@@ -150,14 +150,15 @@ void ADC_Initialize()
 	ADC1->CR |= ADC_CR_ADSTART;   //ADC  Start of Reg4095ar Conversion
 	delay_ms(10);
 }
-
-int abss(int c)
+/*
+int abs(int c)
 {
 	if(c < 0)
 		c = -1*c;
 	
 	return c;
 }
+*/
 
 //        |Left    Right| |      Left PWM       |  |      Right PWM     | |  Values  |   
 void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X, int Y)
@@ -172,8 +173,8 @@ void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X
 	else
 		GPIOE->BRR |= 1 << 15;   //Turn off RIGHT LED
 	
-  TIM1->CCR2 = (uint32_t) abss(4095*oct0 - abss(X*a) - abss(Y*b));   //Left PWM
-  TIM1->CCR1 = (uint32_t) abss(4095*oct1 - abss(X*p) - abss(Y*q));   //Right PWM
+  TIM1->CCR2 = (uint32_t) abs(4095*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
+  TIM1->CCR1 = (uint32_t) abs(4095*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
 	
 	delay_ms(5);
 }
@@ -190,7 +191,7 @@ int read(int k)
 	val = samples[k];
 	val = mapp(val, 0, 4095, -4095, 4095);
 	
-	if(abss(val) < 400)
+	if(abs(val) < 400)
 		val = 0;
 	
 	if(val < -3900)
@@ -217,25 +218,25 @@ int main()
 		y = read(1);   //Read mapped y co-ordinate of Joystick
 		
 		
-		if(abss(x) < 20 & abss(y) < 20)   //No Motion
+		if(abs(x) < 20 & abs(y) < 20)   //No Motion
 			Drive(0,0,0,0,0,0,0,0,0,0);
 		
-		else if(abss(x) < 20 & y >= 20)   //F4095l Forward
+		else if(abs(x) < 20 & y >= 20)   //Full Forward
 			Drive(1,1,0,0,1,0,0,1,x,y);
 		
-		else if(abss(x) < 20 & y <= -20)   //F4095l Backward
+		else if(abs(x) < 20 & y <= -20)   //Full Backward
 			Drive(0,0,0,0,1,0,0,1,x,y);
 		
-		else if(x > 20 & abss(y) <= 20)   //Spot Turn Left
+		else if(x > 20 & abs(y) <= 20)   //Spot Turn Left
 			Drive(1,0,0,1,0,0,1,0,x,y);
 		
-		else if(x < -20 & abss(y) <= 20)   //Spot Turn Right
+		else if(x < -20 & abs(y) <= 20)   //Spot Turn Right
 			Drive(0,1,0,1,0,0,1,0,x,y);
 		
 
 		else if(x > 0 & y > 0 & x >= y)   //Octet 1
 		{
-			if(abss(x) > 4095 - abss(y))
+			if(abs(x) > 4095 - abs(y))
 				Drive(1,0,0,1,0,1,0,1,x,y);
 			else 
 				Drive(1,0,1,0,1,0,1,0,x,y);
@@ -243,7 +244,7 @@ int main()
 				
 		else if(x > 0 & y > 0 & x < y)   //Octet 2
 		{
-			if(abss(y) > 4095 - abss(x))
+			if(abs(y) > 4095 - abs(x))
 				Drive(1,1,0,0,1,1,1,0,x,y);
 			else
 				Drive(1,1,1,1,0,0,0,1,x,y);
@@ -252,48 +253,48 @@ int main()
 		
 		else if(x < 0 & y > 0 & y > x)   //Octet 3
 		{
-			//if(abss(y) > 4095 - abss(x))
+			//if(abs(y) > 4095 - abs(x))
 				Drive(1,1,1,1,0,0,0,1,x,y);
 			//else
 				//Drive(1,1,1,1,0,0,0,1,x,y);
 		}
 		
-		else if(x < 0 & y > 0 & abss(x) >= y)   //Octet 4
+		else if(x < 0 & y > 0 & abs(x) >= y)   //Octet 4
 		{
-			//if(abss(x) > 4095 - abss(y))
+			//if(abs(x) > 4095 - abs(y))
 				Drive(0,1,1,0,1,0,1,0,x,y);
 			//else
 				//Drive(0,1,0,1,0,1,0,1,x,y);
 		}
 		
 		/*
-		else if(x < 0 & y < 0 & abss(x) > abss(y))   //Octet 5
+		else if(x < 0 & y < 0 & abs(x) > abs(y))   //Octet 5
 		{
-			//if(abss(x) > 4095 - abss(y))
+			//if(abs(x) > 4095 - abs(y))
 				Drive(0,1,0,1,0,1,0,1,x,y);
 			//else
 				//Drive(0,1,1,0,1,0,1,0,x,y);
 		}
 		
-		else if(x < 0 & y < 0 & abss(y) >= abss(x))   //Octet 6
+		else if(x < 0 & y < 0 & abs(y) >= abs(x))   //Octet 6
 		{
-			//if(abss(y) > 4095 - abss(x)) 
+			//if(abs(y) > 4095 - abs(x)) 
 				Drive(0,0,0,0,1,1,1,0,x,y);
 			//else
 				//Drive(0,0,1,1,0,0,0,1,x,y);
 		}
 		
-		else if(x > 0 & y < 0 & abss(y) >= abss(x))   //Octet 7
+		else if(x > 0 & y < 0 & abs(y) >= abs(x))   //Octet 7
 		{
-			//if(abss(y) > 4095 - abss(x))
+			//if(abs(y) > 4095 - abs(x))
 				Drive(0,0,1,1,0,0,0,1,x,y);
 			//else
 				//Drive(0,0,0,0,1,1,1,0,x,y);
 		}
 		
-		else if(x > 0 & y < 0 & abss(x) > abss(y))   //Octet 8
+		else if(x > 0 & y < 0 & abs(x) > abs(y))   //Octet 8
 		{
-			//if(abss(x) > 4095 - abss(y))
+			//if(abs(x) > 4095 - abs(y))
 				Drive(1,0,1,0,1,0,1,0,x,y);
 			//else
 				//Drive(1,0,0,1,0,1,0,1,x,y);
@@ -308,5 +309,6 @@ int main()
 	}
 	
 }
+
 
 
