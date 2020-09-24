@@ -14,7 +14,7 @@ PWM:  LD7(PE11)      LD3(PE9)
 
 #include "stm32f303xc.h"
 #include "stdlib.h"
-#include "math.h"
+
 
 volatile int myTicks = 0;
 volatile uint16_t samples[2] = {0,0};
@@ -261,16 +261,12 @@ int main()
 				//Drive(1,1,1,1,0,0,0,1,x,y);
 		}
 		
-		else if(x < 0 & y > 0 & abs(x) >= y)   //Octet 4
+		else if(x < 0 & y < 0 & abs(x) >= abs(y))   //Octet 4
 		{
 			//if(abs(x) > 4095 - abs(y))
-				//Drive(0,1,1,0,1,0,1,0,x,y);
+				Drive(0,1,1,0,1,0,1,0,x,y);
 			//else
 				//Drive(0,1,0,1,0,1,0,1,x,y);
-			GPIOE->BRR |= 1 << 13;
-			GPIOE->BSRR |= 1 << 15;
-			TIM1->CCR2 = 4095 - 	y;
-			TIM1->CCR1 = abs(x);
 		}
 		
 		/*
