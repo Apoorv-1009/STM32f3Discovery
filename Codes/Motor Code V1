@@ -223,19 +223,19 @@ int main()
 		if(abs(x) < 20 & abs(y) < 20)   //No Motion
 			Drive(0,0,0,0,0,0,0,0,0,0);
 		
-		else if(abs(x) < 20 & y >= 20)   //Full Forward
+		else if(abs(x) < 10 & y < 0)   //Full Forward
 			Drive(1,1,0,0,1,0,0,1,x,y);
 		
-		else if(abs(x) < 20 & y <= -20)   //Full Backward
+		else if(abs(x) < 10 & y < 0)   //Full Backward
 			Drive(0,0,0,0,1,0,0,1,x,y);
 		
-		else if(x > 20 & abs(y) <= 20)   //Spot Turn Left
+		else if(x < 0 & abs(y) <= 20)   //Spot Turn Left
 			Drive(1,0,0,1,0,0,1,0,x,y);
 		
-		else if(x < -20 & abs(y) <= 20)   //Spot Turn Right
+		else if(x > 0 & abs(y) <= 20)   //Spot Turn Right
 			Drive(0,1,0,1,0,0,1,0,x,y);
 		
-
+		/*
 		else if(x > 0 & y > 0 & x >= y)   //Octet 1
 		{
 			if(abs(x) > 4095 - abs(y))
