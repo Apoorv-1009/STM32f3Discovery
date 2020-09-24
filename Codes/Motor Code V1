@@ -13,6 +13,8 @@ PWM:  LD7(PE11)      LD3(PE9)
 */
 
 #include "stm32f303xc.h"
+#include "stdlib.h"
+#include "math.h"
 
 volatile int myTicks = 0;
 volatile uint16_t samples[2] = {0,0};
@@ -195,7 +197,7 @@ int read(int k)
 		val = 0;
 	
 	if(val < -3900)
-		val = -1*4095;
+		val = -4095;
 	
 	if(val > 3900)
 		val = 4095;
