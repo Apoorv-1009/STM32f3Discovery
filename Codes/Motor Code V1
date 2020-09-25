@@ -212,7 +212,7 @@ int read(int k)
 	
 	return val;
 }
-
+/*
 void checkthis(int a,int b)   //Check if mapped x and y values are -ve or +ve
 {
 	//Check LEDs: PA2->x, PA3->y
@@ -226,7 +226,7 @@ void checkthis(int a,int b)   //Check if mapped x and y values are -ve or +ve
 	else 
 		GPIOA->BRR |= 1 << 3;
 }
-
+*/
 
 int main()
 {
@@ -241,27 +241,27 @@ int main()
 		x = read(0);   //Read mapped x co-ordinate of Joystick
 		y = read(1);   //Read mapped y co-ordinate of Joystick
 		
-		checkthis(x,y);
+		//checkthis(x,y);
 		
-		/*
-		if(abs(x) < 20 & abs(y) < 20)   //No Motion
+		
+		if(abs(x) < 20 && abs(y) < 20)   //No Motion
 			Drive(0,0,0,0,0,0,0,0,0,0);
 		
-		else if(abs(x) < 10 & y < 0)   //Full Forward
+		else if(abs(x) < 10 && y < 0)   //Full Forward
 			Drive(1,1,0,0,1,0,0,1,x,y);
 		
-		else if(abs(x) < 10 & y > 0)   //Full Backward
+		else if(abs(x) < 10 && y > 0)   //Full Backward
 			Drive(0,0,0,0,1,0,0,1,x,y);
 		
-		else if(x < 0 & abs(y) <= 20)   //Spot Turn Left
+		else if(x < 0 && abs(y) <= 20)   //Spot Turn Left
 			Drive(1,0,0,1,0,0,1,0,x,y);
 		
-		else if(x > 0 & abs(y) <= 20)   //Spot Turn Right
+		else if(x > 0 && abs(y) <= 20)   //Spot Turn Right
 			Drive(0,1,0,1,0,0,1,0,x,y);
 		
 		//Check LEDs: PA2->x, PA3->y
 		
-		else if(x > 0 & y < 0 & x >= abs(y))   //Octet 1
+		else if(x > 0 && y < 0 && x >= abs(y))   //Octet 1
 		{
 			//if(abs(x) > 4095 - abs(y))
 				Drive(1,0,0,1,0,1,0,1,x,y);
@@ -269,7 +269,7 @@ int main()
 				//Drive(1,0,1,0,1,0,1,0,x,y);
 		}
 				
-		else if(x > 0 & y < 0 & x < abs(y))   //Octet 2
+		else if(x > 0 && y < 0 && x < abs(y))   //Octet 2
 		{
 			//if(abs(y) > 4095 - abs(x))
 				Drive(1,1,0,0,1,1,1,0,x,y);
@@ -277,7 +277,7 @@ int main()
 				//Drive(1,1,1,1,0,0,0,1,x,y);
 		}
 		
-		
+		/*
 		else if(x < 0 & y < 0 & abs(y) > abs(x))   //Octet 3
 		{
 			//if(abs(y) > 4095 - abs(x))
@@ -331,7 +331,7 @@ int main()
 		*/
 		
 		//Test Drive:
-		Drive(1,1,0,1,0,0,0,1,x,y);
+		//Drive(1,1,0,1,0,0,0,1,x,y);
 		
 	}
 	
