@@ -182,7 +182,7 @@ void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X
   TIM1->CCR2 = (uint32_t) abs(4095*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
   TIM1->CCR1 = (uint32_t) abs(4095*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
 	
-	delay_ms(5);
+	//delay_ms(5);
 }
 
 
@@ -294,7 +294,8 @@ int main()
 		else if(x < 0 && y > 0 && abs(x) > abs(y))   //Octet 5
 		{
 			//if(abs(x) > 4095 - abs(y))
-				Drive(0,1,0,1,0,1,0,1,x,y);
+				//Drive(0,1,0,1,0,1,0,1,x,y);
+			Drive(0,1,0,0,0,0,0,0,0,0);
 			//else
 				//Drive(0,1,1,0,1,0,1,0,x,y);
 		}
@@ -302,7 +303,8 @@ int main()
 		else if(x < 0 && y > 0 && abs(y) >= abs(x))   //Octet 6
 		{
 			//if(abs(y) > 4095 - abs(x)) 
-				Drive(0,0,0,0,1,1,1,0,x,y);
+				//Drive(0,0,0,0,1,1,1,0,x,y);
+			Drive(0,0,0,0,0,0,0,0,0,0);
 			//else
 				//Drive(0,0,1,1,0,0,0,1,x,y);
 		}
@@ -310,7 +312,8 @@ int main()
 		else if(x > 0 && y > 0 && abs(y) >= abs(x))   //Octet 7
 		{
 			//if(abs(y) > 4095 - abs(x))
-				Drive(0,0,1,1,0,0,0,1,x,y);
+				//Drive(0,0,1,1,0,0,0,1,x,y);
+			Drive(0,0,0,0,0,0,0,0,0,0);
 			//else
 				//Drive(0,0,0,0,1,1,1,0,x,y);
 		}
@@ -318,7 +321,8 @@ int main()
 		else if(x > 0 && y < 0 && abs(x) > abs(y))   //Octet 8
 		{
 			//if(abs(x) > 4095 - abs(y))
-				Drive(1,0,1,0,1,0,1,0,x,y);
+				//Drive(1,0,1,0,1,0,1,0,x,y);
+			Drive(1,0,0,0,0,0,0,0,0,0);
 			//else
 				//Drive(1,0,0,1,0,1,0,1,x,y);
 		}
