@@ -263,21 +263,21 @@ int main()
 		
 		else if(x > 0 && y < 0 && x >= abs(y))   //Octet 1
 		{
-			//if(abs(x) > 4095 - abs(y))
+			if(abs(x) > 4095 - abs(y))
 				Drive(1,0,0,1,0,1,0,1,x,y);
-			//else 
-				//Drive(1,0,1,0,1,0,1,0,x,y);
+			else 
+				Drive(1,0,1,0,1,0,1,0,x,y);
 		}
 				
 		else if(x > 0 && y < 0 && x < abs(y))   //Octet 2
 		{
-			//if(abs(y) > 4095 - abs(x))
+			if(abs(y) > 4095 - abs(x))
 				Drive(1,1,0,0,1,1,1,0,x,y);
-			//else
-				//Drive(1,1,1,1,0,0,0,1,x,y);
+			else
+				Drive(1,1,1,1,0,0,0,1,x,y);
 		}
 		
-		/*
+		
 		else if(x < 0 && y < 0 && abs(y) > abs(x))   //Octet 3
 		{
 			//if(abs(y) > 4095 - abs(x))
