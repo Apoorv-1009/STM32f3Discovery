@@ -42,51 +42,47 @@ void delay_ms(int del)
 
 void GPIO_Initialize()
 {
-	//Setup PA1:
+	//Enable Clocks:
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
+	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for Port E
+	
+	//Setup PA1:
 	GPIOA->MODER |= GPIO_MODER_MODER1_1 | GPIO_MODER_MODER1_0;   //Enable Analog Mode
 	
 	//Setup PA0:
-	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
 	GPIOA->MODER |= GPIO_MODER_MODER0_1 | GPIO_MODER_MODER0_0;   //Enable Analog Mode
 	
 	//Setup PA2:
-	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
 	GPIOA->MODER &= ~(GPIO_MODER_MODER2_1);   //Enable as OUTPUT
 	GPIOA->MODER |= GPIO_MODER_MODER2_0;
 	GPIOA->OTYPER &= ~(GPIO_OTYPER_OT_2);   //Output Push-Pull
 	GPIOA->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR2);   //High Speed
 	
 	//Setup PA3: 
-	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
 	GPIOA->MODER &= ~(GPIO_MODER_MODER3_1);   //Enable as OUTPUT
 	GPIOA->MODER |= GPIO_MODER_MODER3_0;
 	GPIOA->OTYPER &= ~(GPIO_OTYPER_OT_3);   //Output Push-Pull
 	GPIOA->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR3);   //High Speed
 	
 	//Setup PE15:
-	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for Port E
 	GPIOE->MODER &= ~(GPIO_MODER_MODER15_1);   //Enable as OUTPUT
 	GPIOE->MODER |= GPIO_MODER_MODER15_0;
 	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_15);   //Output Push-Pull
 	GPIOE->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR15);   //High Speed
 	
 	//Setup PE13:
-	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for Port E
 	GPIOE->MODER &= ~(GPIO_MODER_MODER13_1);   //Enable as OUTPUT
 	GPIOE->MODER |= GPIO_MODER_MODER13_0;
 	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_13);   //Output Push-Pull
 	GPIOE->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR13);   //High Speed
 	
 	//Setup PE9:
-	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for Port E
 	//Enable AF Mode:
 	GPIOE->MODER |= GPIO_MODER_MODER9_1;   
 	GPIOE->MODER &= ~(GPIO_MODER_MODER9_0);
 	GPIOE->AFR[1] |= 1 << 5;
 	
 	//Setup PE11:
-	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for Port E
 	//Enable AF Mode:
 	GPIOE->MODER |= GPIO_MODER_MODER11_1;   
 	GPIOE->MODER &= ~(GPIO_MODER_MODER11_0);
@@ -242,7 +238,7 @@ int main()
 		y = read(1);   //Read mapped y co-ordinate of Joystick
 		
 		//checkthis(x,y);
-		
+		//Check LEDs: PA2->x, PA3->y
 		
 		if(abs(x) < 20 && abs(y) < 20)   //No Motion
 			Drive(0,0,0,0,0,0,0,0,0,0);
@@ -294,7 +290,7 @@ int main()
 				//Drive(0,1,0,1,0,1,0,1,x,y);
 		}
 		
-		/*
+		
 		else if(x < 0 && y > 0 && abs(x) > abs(y))   //Octet 5
 		{
 			//if(abs(x) > 4095 - abs(y))
@@ -336,3 +332,4 @@ int main()
 	}
 	
 }
+
