@@ -10,6 +10,8 @@ x->PA1   y->PA0
       Left     	     Right
 LED:  LD10(PE13)     LD6(PE15)
 PWM:  LD7(PE11)      LD3(PE9)
+
+Check LEDs: PA2->x, PA3->y
 */
 
 #include "stm32f303xc.h"
@@ -48,18 +50,32 @@ void GPIO_Initialize()
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
 	GPIOA->MODER |= GPIO_MODER_MODER0_1 | GPIO_MODER_MODER0_0;   //Enable Analog Mode
 	
+	//Setup PA2:
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
+	GPIOA->MODER &= ~(GPIO_MODER_MODER2_1);   //Enable as OUTPUT
+	GPIOA->MODER |= GPIO_MODER_MODER2_0;
+	GPIOA->OTYPER &= ~(GPIO_OTYPER_OT_2);   //Output Push-Pull
+	GPIOA->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR2);   //High Speed
+	
+	//Setup PA3: 
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for Port A
+	GPIOA->MODER &= ~(GPIO_MODER_MODER3_1);   //Enable as OUTPUT
+	GPIOA->MODER |= GPIO_MODER_MODER3_0;
+	GPIOA->OTYPER &= ~(GPIO_OTYPER_OT_3);   //Output Push-Pull
+	GPIOA->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR3);   //High Speed
+	
 	//Setup PE15:
 	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for Port E
 	GPIOE->MODER &= ~(GPIO_MODER_MODER15_1);   //Enable as OUTPUT
 	GPIOE->MODER |= GPIO_MODER_MODER15_0;
-	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_15);   //Output Push-P4095l
+	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_15);   //Output Push-Pull
 	GPIOE->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR15);   //High Speed
 	
 	//Setup PE13:
 	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;   //Enable Clock for Port E
 	GPIOE->MODER &= ~(GPIO_MODER_MODER13_1);   //Enable as OUTPUT
 	GPIOE->MODER |= GPIO_MODER_MODER13_0;
-	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_13);   //Output Push-P4095l
+	GPIOE->OTYPER &= ~(GPIO_OTYPER_OT_13);   //Output Push-Pull
 	GPIOE->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR13);   //High Speed
 	
 	//Setup PE9:
@@ -152,15 +168,7 @@ void ADC_Initialize()
 	ADC1->CR |= ADC_CR_ADSTART;   //ADC  Start of Reg4095ar Conversion
 	delay_ms(10);
 }
-/*
-int abs(int c)
-{
-	if(c < 0)
-		c = -1*c;
-	
-	return c;
-}
-*/
+
 
 //        |Left    Right| |      Left PWM       |  |      Right PWM     | |  Values  |   
 void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X, int Y)
@@ -205,6 +213,19 @@ int read(int k)
 	return val;
 }
 
+void checkthis(int a,int b)
+{
+	if(a < 0)
+		GPIOA->BSRR |= 1 << 2;
+	else 
+		GPIOA->BRR |= 1 << 2;
+	
+	if(b < 0)
+		GPIOA->BSRR |= 1 << 3;
+	else 
+		GPIOA->BRR |= 1 << 3;
+}
+
 
 int main()
 {
@@ -218,6 +239,8 @@ int main()
 	{
 		x = read(0);   //Read mapped x co-ordinate of Joystick
 		y = read(1);   //Read mapped y co-ordinate of Joystick
+		
+		checkthis(x,y);
 		
 		
 		if(abs(x) < 20 & abs(y) < 20)   //No Motion
