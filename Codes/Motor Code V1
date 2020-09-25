@@ -125,7 +125,7 @@ void ADC_Initialize()
 	RCC->AHBENR |= RCC_AHBENR_ADC12EN;   //Enable ADC Clock
 	RCC->AHBENR |= RCC_AHBENR_DMA1EN;   //Enable DMA1  
 	
-	//Enable Voltage Reg4095ator
+	//Enable Voltage Regulator
 	ADC1->CR &= ~(ADC_CR_ADVREGEN_1);
 	ADC1->CR |= ADC_CR_ADVREGEN_0;
 	delay_ms(10);
@@ -145,14 +145,14 @@ void ADC_Initialize()
 	ADC1->SQR1 |= ADC_SQR1_SQ2_1;	  //Channel 2, Sequence 2  
 	
 	ADC1->CFGR |= ADC_CFGR_DMAEN;   //DMA Enable
-	ADC1->CFGR |= ADC_CFGR_DMACFG;   //Circ4095ar Mode seleced
+	ADC1->CFGR |= ADC_CFGR_DMACFG;   //Circular Mode seleced
 		 
 	//DMA Settings:  
 	DMA1_Channel1->CPAR = (uint32_t)(&(ADC1->DR));   //Give location to read from  
 	DMA1_Channel1->CMAR = (uint32_t)samples;   //Give location to store  
 	DMA1_Channel1->CNDTR |= 2;   //Define Number of times to transfer data 
 	
-	DMA1_Channel1->CCR |= DMA_CCR_CIRC;   //Enable Circ4095ar Mode
+	DMA1_Channel1->CCR |= DMA_CCR_CIRC;   //Enable Circular Mode
 	DMA1_Channel1->CCR |= DMA_CCR_MINC;   //Memory Increment Mode
 	DMA1_Channel1->CCR |= DMA_CCR_PSIZE_0;   //Define Peripheral Data size as 16 bits
 	DMA1_Channel1->CCR |= DMA_CCR_MSIZE_0;   //Define Memory size as 16 bits
@@ -165,7 +165,7 @@ void ADC_Initialize()
 	ADC1->SMPR1 |= ( ADC_SMPR1_SMP2);   //601.5 Sampling Rate for Channel 2   
 																																							 
 	ADC1->CFGR |= ADC_CFGR_CONT;   //Enable Continuous Conversion Mode
-	ADC1->CR |= ADC_CR_ADSTART;   //ADC  Start of Reg4095ar Conversion
+	ADC1->CR |= ADC_CR_ADSTART;   //ADC  Start of Regular Conversion
 	delay_ms(10);
 }
 
@@ -213,8 +213,9 @@ int read(int k)
 	return val;
 }
 
-void checkthis(int a,int b)
+void checkthis(int a,int b)   //Check if mapped x and y values are -ve or +ve
 {
+	//Check LEDs: PA2->x, PA3->y
 	if(a < 0)
 		GPIOA->BSRR |= 1 << 2;
 	else 
@@ -242,7 +243,7 @@ int main()
 		
 		checkthis(x,y);
 		
-		
+		/*
 		if(abs(x) < 20 & abs(y) < 20)   //No Motion
 			Drive(0,0,0,0,0,0,0,0,0,0);
 		
@@ -258,6 +259,7 @@ int main()
 		else if(x > 0 & abs(y) <= 20)   //Spot Turn Right
 			Drive(0,1,0,1,0,0,1,0,x,y);
 		
+		//Check LEDs: PA2->x, PA3->y
 		
 		else if(x > 0 & y < 0 & x >= abs(y))   //Octet 1
 		{
@@ -329,7 +331,7 @@ int main()
 		*/
 		
 		//Test Drive:
-		//Drive(1,1,0,1,0,0,0,1,x,y);
+		Drive(1,1,0,1,0,0,0,1,x,y);
 		
 	}
 	
