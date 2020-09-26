@@ -194,20 +194,8 @@ int read(int k)
 	return val;
 }
 
-
-int main()
+void MotorCode(int x, int y)
 {
-	SysTick_Initialize();
-	GPIO_Initialize();
-	Timer_Initialize();
-	ADC_Initialize();
-	
-	int x,y;
-	while(1)
-	{
-		x = read(0);   //Read mapped x co-ordinate of Joystick
-		y = read(1);   //Read mapped y co-ordinate of Joystick
-		
 		if(abs(x) < 20 && abs(y) < 20)   //No Motion
 			Drive(0,0,0,0,0,0,0,0,0,0);
 		
@@ -291,9 +279,26 @@ int main()
 		
 		//Test Drive:
 		//Drive(1,1,0,1,0,0,0,1,x,y);
+}
+
+
+int main()
+{
+	SysTick_Initialize();
+	GPIO_Initialize();
+	Timer_Initialize();
+	ADC_Initialize();
+	
+	int x_read,y_read;
+	while(1)
+	{
+		x_read = read(0);   //Read mapped x co-ordinate of Joystick
+		y_read = read(1);   //Read mapped y co-ordinate of Joystick
+		
+		MotorCode(x_read,y_read);
 		
 	}
-	
 }
+
 
 
