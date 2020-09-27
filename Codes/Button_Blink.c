@@ -18,10 +18,10 @@ void GPIO_Initialize()
 	
 	//PA0 Setup:
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;   //Enable Clock for PortA
-	GPIOE->MODER &= ~(GPIO_MODER_MODER0);   //Enable PA0 as INPUT
+	GPIOA->MODER &= ~(GPIO_MODER_MODER0);   //Enable PA0 as INPUT
 	
-	GPIOE->PUPDR |= GPIO_PUPDR_PUPDR0_1;   //Enable Pull-Down
-	GPIOE->PUPDR &= ~(GPIO_PUPDR_PUPDR0_0);
+	GPIOA->PUPDR |= GPIO_PUPDR_PUPDR0_1;   //Enable Pull-Down
+	GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPDR0_0);
 	
 }
 
