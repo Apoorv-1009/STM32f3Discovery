@@ -317,7 +317,19 @@ int main()
 		if(GPIOA->IDR & GPIO_IDR_0)   //Button Press
 			k = Toggle(k);
 		
-		if(k == 0)   //MotorCode Mode
+		
+		switch(k)
+		{
+			case 0: MotorCode(x_read,y_read);   //MotorCode Mode
+							break;
+			
+			case 1: MotorCode(x_read,y_read);   //HillAssist Mode
+							k = 3;
+							break;
+			default: delay_ms(1);
+							 break;
+		}
+		/*if(k == 0)   //MotorCode Mode
 			MotorCode(x_read,y_read);
 		
 		else if(k == 1)   //HillAssist Mode
@@ -326,6 +338,8 @@ int main()
 			k = 3;
 		}
 		delay_ms(5);
+		*/
 		
 	}
 }
+
