@@ -315,8 +315,10 @@ int main()
 		y_read = read(1);   //Read mapped y co-ordinate of Joystick
 		
 		if(GPIOA->IDR & GPIO_IDR_0)   //Button Press
+		{
+			delay_ms(5);
 			k = Toggle(k);
-		
+		}
 		
 		switch(k)
 		{
