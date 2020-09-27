@@ -322,6 +322,15 @@ int main()
 		
 		switch(k)
 		{
+			case 0: MotorCode(x_read,y_read);
+				break;
+			
+			default: delay_ms(1);
+		}
+		
+		/*
+		switch(k)
+		{
 			case 0: MotorCode(x_read,y_read);   //MotorCode Mode
 							break;
 			
@@ -344,4 +353,5 @@ int main()
 		
 	}
 }
+
 
