@@ -206,6 +206,7 @@ int Toggle(int a)
 {
 	if(a == 0)
 		a = 1;
+	
 	else
 		a = 0;
 		
@@ -317,11 +318,13 @@ int main()
 		if(GPIOA->IDR & GPIO_IDR_0)   //Button Press
 		{
 			k = Toggle(k);
-			delay_ms(10);
+			delay_ms(500);
 		}
 		
 		switch(k)
 		{
+			case 1: break;
+			
 			case 0: MotorCode(x_read,y_read);
 				break;
 			
