@@ -41,7 +41,6 @@ void delay_ms(int del)
 	while(myTicks < del);
 }
 
-
 void GPIO_Initialize()
 {
 	//Enable Clocks:
@@ -53,14 +52,6 @@ void GPIO_Initialize()
 	GPIOA->MODER &= ~(GPIO_MODER_MODER0);   //Enable as INPUT
 	GPIOA->PUPDR |= GPIO_PUPDR_PUPDR0_1;   //Enable Pull-Down
 	GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPDR0_0);
-	
-	/*
-	//Setup PA1:
-	GPIOA->MODER |= GPIO_MODER_MODER1_1 | GPIO_MODER_MODER1_0;   //Enable Analog Mode
-	
-	//Setup PA2:
-	GPIOA->MODER |= GPIO_MODER_MODER2_1 | GPIO_MODER_MODER2_0;   //Enable Analog Mode
-	*/
 	
 	//Setup PC5:
 	GPIOC->MODER |= GPIO_MODER_MODER5_1;   //Enable AF
@@ -114,66 +105,12 @@ void Timer_Initialize()
 	
 	TIM1->EGR |= TIM_EGR_UG;   //Update Registers
 	TIM1->CR1 |= TIM_CR1_CEN;   //Start Counting
-	 
 }
-
-/*
-void ADC_Initialize()
-{
-	RCC->CFGR |= RCC_CFGR2_ADCPRE12_DIV1;   //f/1 = 72Mhz
-	RCC->AHBENR |= RCC_AHBENR_ADC12EN;   //Enable ADC Clock
-	RCC->AHBENR |= RCC_AHBENR_DMA1EN;   //Enable DMA1  
-	
-	//Enable Voltage Regulator
-	ADC1->CR &= ~(ADC_CR_ADVREGEN_1);
-	ADC1->CR |= ADC_CR_ADVREGEN_0;
-	delay_ms(10);
-	
-	ADC1_2_COMMON->CCR |= 1 << 16;   //Set ADC Clock to Synchronous Mode
-	ADC1->CR &= ~(ADC_CR_ADCALDIF);   //Launch Calibration in Single-Ended Input Mode
-	ADC1->CR |= ADC_CR_ADCAL;   //Start Calibration
-	while( (ADC1->CR) & ADC_CR_ADCAL);   //Wait till Calibration is Complete
-	delay_ms(10);
-	
-	ADC1->CR |= ADC_CR_ADEN;   //Enable ADC
-	//while(!( (ADC1->ISR) & ADC_ISR_ADRDY) );   //Wait till ADC is Ready
-	
-	ADC1->SQR1 |= 1 << 0;   //Set Length of 2 ADC Sequences  
-	//Set channel you want to convert in the sequence registers:
-	ADC1->SQR1 |= ADC_SQR1_SQ1_1;   //Channel 2, Sequence 1  
-	ADC1->SQR1 |= ADC_SQR1_SQ2_1 | ADC_SQR1_SQ2_0;	  //Channel 3, Sequence 2  
-	
-	ADC1->CFGR |= ADC_CFGR_DMAEN;   //DMA Enable
-	ADC1->CFGR |= ADC_CFGR_DMACFG;   //Circular Mode seleced
-		 
-	//DMA Settings:  
-	DMA1_Channel1->CPAR = (uint32_t)(&(ADC1->DR));   //Give location to read from  
-	DMA1_Channel1->CMAR = (uint32_t)samples;   //Give location to store  
-	DMA1_Channel1->CNDTR |= 2;   //Define Number of times to transfer data 
-	
-	DMA1_Channel1->CCR |= DMA_CCR_CIRC;   //Enable Circular Mode
-	DMA1_Channel1->CCR |= DMA_CCR_MINC;   //Memory Increment Mode
-	DMA1_Channel1->CCR |= DMA_CCR_PSIZE_0;   //Define Peripheral Data size as 16 bits
-	DMA1_Channel1->CCR |= DMA_CCR_MSIZE_0;   //Define Memory size as 16 bits
-	
-	DMA1_Channel1->CCR |= DMA_CCR_EN;   //Enable DMA1
-	//!NOTE! Do NOT Enable DMA before you define all of its settings
-	
-	//Set Sampling Rate:
-	ADC1->SMPR1 |= ( ADC_SMPR1_SMP2);   //601.5 Sampling Rate for Channel 2
-	ADC1->SMPR1 |= ( ADC_SMPR1_SMP3);   //601.5 Sampling Rate for Channel 3   
-																																							 
-	ADC1->CFGR |= ADC_CFGR_CONT;   //Enable Continuous Conversion Mode
-	ADC1->CR |= ADC_CR_ADSTART;   //ADC  Start of Regular Conversion
-	delay_ms(10);
-}
-*/
 
 void UART_Initialize()
 {
 	RCC->APB2ENR |= RCC_APB2ENR_USART1EN;   //UART Enable
 	USART1->BRR |= 833;   //Baud Rate: 9600     
-	
 	//               Rx Enable    UART Enable
 	USART1->CR1 |= USART_CR1_RE | USART_CR1_UE;
 }
@@ -206,8 +143,6 @@ void Drive(int DL, int DR, int oct0, int a, int b, int oct1, int p, int q, int X
 	
   TIM1->CCR2 = (uint32_t) abs(4095*oct0 - abs(X*a) - abs(Y*b));   //Left PWM
   TIM1->CCR1 = (uint32_t) abs(4095*oct1 - abs(X*p) - abs(Y*q));   //Right PWM
-	
-	//delay_ms(5);
 }
 
 
@@ -335,15 +270,15 @@ int main()
 	SysTick_Initialize();
 	GPIO_Initialize();
 	Timer_Initialize();
-	//ADC_Initialize();
 	UART_Initialize();
 	
-	int x_read,y_read;
+	int x_read = 0,y_read = 0;
 	int button = 0;
 	int prev_button = 0;
 	int k = 0;
 	while(1)
 	{
+		UART_Read();
 		x_read = read(0);   //Read mapped x co-ordinate of Joystick
 		y_read = read(1);   //Read mapped y co-ordinate of Joystick
 		
