@@ -3,7 +3,7 @@ Code implements Motor Code and Hill Assist on LEDs thru PWM with Timer1, by read
 Onboard Button has been used to implement HillAssist
 Setup:
 All LEDs are Onboard
-Button: PA0(onbaord)
+Button: PA0(Onboard)
 PWM LEDs: LD3(PE9->Ch1), LD7(PE11->Ch2)
 Direction LEDs: LD6(PE15), LD10(PE13)
 Joystick: PA1(Ch 2), PA2(Ch 3)
