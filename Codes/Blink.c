@@ -17,7 +17,8 @@ void GPIO_Initialize()
 void delay(int k)
 {
 	int i = 0;
-	for(i = 0; i < k; i++);
+	for(i = 0; i < k; i++)
+	__NOP();
 }
 
 int main()
