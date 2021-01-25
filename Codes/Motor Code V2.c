@@ -332,7 +332,7 @@ int main()
 			case 1: break;
 			
 			case 0: MotorCode(x_read,y_read);
-							break;
+				break;
 			
 			default: delay_ms(1);
 		}
